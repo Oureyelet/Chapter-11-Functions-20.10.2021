@@ -64,11 +64,21 @@ int main()
 
     }
     foo(6, 7);
-
     */
 
+    /*
+    When foo() is called with arguments 6 and 7, foo’s parameter x is created and assigned the value of 6, and foo’s 
+    parameter y is created and assigned the value of 7.
 
+    Even though parameters are not declared inside the function block, function parameters have local scope. This means 
+    that they are created when the function is invoked, and are destroyed when the function block terminates:
 
+    void foo(int x, int y) // x and y are created here
+    {
+    } // x and y are destroyed here
 
+    There are 3 primary methods of passing arguments to functions: pass by value, pass by reference, and pass by address. 
+    We’ll look at each of those in the next set of lessons.
+    */
    return 0;
 }
