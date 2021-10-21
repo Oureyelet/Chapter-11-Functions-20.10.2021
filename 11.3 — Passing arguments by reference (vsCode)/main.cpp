@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath> // for std::sin() and std::cos()
+#include <string>
 
 //To pass a variable by reference, we simply declare the function parameters as references rather than as normal variables:
 void addOne(int& ref)// ref is a reference variable
@@ -18,6 +19,28 @@ void getSinCos(double degrees, double& sinOut, double& cosOut)
 
 }
 
+//The following function will produce a compiler error:
+void foo(const std::string& x) // x is a const reference
+{
+   // x = "HelloWorld"; // compile error: a const reference cannot have its value changed!
+}
+
+void foo2(int*& ptr)// pass pointer by reference
+{
+    ptr = nullptr;// this changes the actual ptr argument passed in, not a copy
+}
+
+// Note: You need to specify the array size in the function declaration
+void printElements(int (&arr)[4])
+{
+    int lenght{ sizeof(arr) / sizeof(arr[0]) };// we can now do this since the array won't decay
+
+    for(int i{ 0 }; i < lenght; ++i)
+    {
+        std::cout << arr[i] << ' ';
+    }
+    std::cout << std::endl;
+}
 
 
 int main()
@@ -135,8 +158,119 @@ int main()
     std::cout << "//////////////////////////////////////////////////////////////////" << '\n';
     //////////////////////////////////////////////////////////////////////////////////////////
     /*
-    
+    As mentioned in the introduction, one of the major disadvantages of pass by value is that all arguments passed by value 
+    are copied into the function parameters. When the arguments are large structs or classes, this can take a lot of time. 
+    References provide a way to avoid this penalty. When an argument is passed by reference, a reference is created to the 
+    actual argument (which takes minimal time) and no copying of values takes place. This allows us to pass large structs and 
+    classes with a minimum performance penalty.
+
+    However, this also opens us up to potential trouble. References allow the function to change the value of the argument, 
+    which is undesirable when we want an argument be read-only. If we know that a function should not change the value of an 
+    argument, but don’t want to pass by value, the best solution is to pass by const reference.
+
+    You already know that a const reference is a reference that does not allow the variable being referenced to be changed 
+    through the reference. Consequently, if we use a const reference as a parameter, we guarantee to the caller that the 
+    function will not change the argument!
+
+    The following function will produce a compiler error:
     */
+    //see function foo() above
+
+    /*
+    Using const is useful for several reasons:
+
+    It enlists the compilers help in ensuring values that shouldn’t be changed aren’t changed (the compiler will throw an 
+    error if you try, like in the above example).
+    It tells the programmer that the function won’t change the value of the argument. This can help with debugging.
+    You can’t pass a const argument to a non-const reference parameter. Using const parameters ensures you can pass both 
+    non-const and const arguments to the function.
+    Const references can accept any type of argument, including non-const l-values, const l-values, and r-values. 
+
+    Best practice:
+
+    When passing an argument by reference, always use a const reference unless you need to change the value of the argument. 
+    */
+
+    
+    std::cout << std::endl;
+    //////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "//////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "References to pointers" << '\n';
+    std::cout << "//////////////////////////////////////////////////////////////////" << '\n';
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    It’s possible to pass a pointer by reference, and have the function change the address of the pointer entirely:
+    */
+
+    int x2{ 5 };
+    int* ptr{ &x2 };
+
+    std::cout << "ptr is: " << (ptr ? "non-null" : "null") << '\n';// prints non-null
+
+    foo2(ptr);
+
+    std::cout << "ptr is: " << (ptr ? "non-null" : "null") << '\n';// prints null
+
+    /*
+    (We’ll show another example of this in the next lesson)
+
+    As a reminder, you can pass a C-style array by reference. This is useful if you need the ability for the function to 
+    change the array (e.g. for a sort function) or you need access to the array’s type information of a 
+    fixed array (to do sizeof() or a for-each loop). However, note that in order for this to work, you explicitly need to 
+    define the array size in the parameter:
+    */
+    int arr[]{ 3, 7, 34, 8 };
+
+    printElements(arr);
+
+    /*
+    This means this only works with fixed arrays of one particular length. If you want this to work with fixed arrays of any 
+    length, you can make the array length a template parameter (covered in a later chapter).
+    */
+
+
+    std::cout << std::endl;
+    //////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "//////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "Pros and cons of pass by reference" << '\n';
+    std::cout << "//////////////////////////////////////////////////////////////////" << '\n';
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    Advantages of passing by reference:
+
+    References allow a function to change the value of the argument, which is sometimes useful. Otherwise, const references 
+    can be used to guarantee the function won’t change the argument.
+    Because a copy of the argument is not made, pass by reference is fast, even when used with large structs or classes.
+    References can be used to return multiple values from a function (via out parameters).
+    References must be initialized, so there’s no worry about null values. 
+
+    Disadvantages of passing by reference:
+
+        Because a non-const reference cannot be initialized with a const l-value or an r-value (e.g. a literal or an expression), 
+        arguments to non-const reference parameters must be normal variables.
+        It can be hard to tell whether an argument passed by non-const reference is meant to be input, output, or both. 
+        Judicious use of const and a naming suffix for out variables can help.
+        It’s impossible to tell from the function call whether the argument may change. An argument passed by value and 
+        passed by reference looks the same. We can only tell whether an argument is passed by value or reference by 
+        looking at the function declaration. This can lead to situations where the programmer does not realize a function will 
+        change the value of the argument. 
+
+    When to use pass by reference:
+
+        When passing structs or classes (use const if read-only).
+        When you need the function to modify an argument.
+        When you need access to the type information of a fixed array.
+
+    When not to use pass by reference:
+
+        When passing fundamental types that don’t need to be modified (use pass by value).
+
+    Best practice
+
+    Use pass by (const) reference instead of pass by value for structs and classes and other expensive-to-copy types. 
+    */
+
+
 
 
 
