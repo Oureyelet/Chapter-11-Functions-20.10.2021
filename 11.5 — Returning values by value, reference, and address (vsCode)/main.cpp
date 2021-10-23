@@ -1,5 +1,9 @@
 #include <iostream>
 #include <array>
+#include <tuple>
+
+//function protytypes for Quiz time:
+int sumTo(int);
 
 int doubleValue(int x)
 {
@@ -22,6 +26,49 @@ int& getElement(std::array<int, 25>& array, int index)
     */
     return array[index];
 }
+
+int returnByValue()
+{
+    return 5;
+}
+
+int& returnByReference()
+{
+    static int x{ 5 };
+    return x;
+}
+
+const int returnByValue_2()
+{
+    return 5;
+}
+
+struct S
+{
+    int m_x;
+    double m_y;
+};
+
+S returnStruct()
+{
+    S s;
+    s.m_x = 5;
+    s.m_y = 7.8;
+    return s;
+};
+
+std::tuple<int, double, float, int> returnTuple()// return a tuple that contains an int and a double
+{
+    return {5, 7.8, 1.2, 123};
+}
+
+struct Employee
+{
+    //just for instance...
+    int x; 
+    double y;
+};
+
 
 int main()
 {
@@ -197,12 +244,180 @@ int main()
     std::cout << "//////////////////////////////////////////////////////////////////" << '\n';
     //////////////////////////////////////////////////////////////////////////////////////////
     /*
-    
+    Although a function may return a value or a reference, the caller may or may not assign the result to a variable or 
+    reference accordingly. Let’s look at what happens when we mix value and reference types.
+    */
+
+    int giana{ returnByReference() }; // case A -- ok, treated as return by value
+    //int& ref{ returnByValue() }; // case B -- compile error since the value is an r-value, and an r-value can't bind to a non-const reference
+    const int& cref{ returnByValue() }; // case C -- ok, the lifetime of the return value is extended to the lifetime of cref
+
+    /*
+    In case A, we’re assigning a reference return value to a non-reference variable. Because giana isn’t a reference, 
+    the return value is copied into giana, as if returnByReference() had returned by value.
+
+    In case B, we’re trying to initialize reference ref with the copy of the return value returned by returnByValue(). 
+    However, because the value being returned doesn’t have an address (it’s an r-value), this will cause a compile error.
+
+    In case C, we’re trying to initialize const reference cref with the copy of the return value returned by returnByValue(). 
+    Because const references can bind to r-values, there’s no problem here. Normally, r-values expire at the end of the 
+    expression in which they are created -- however, when bound to a const reference, the lifetime of the r-value (in this case, 
+    the return value of the function) is extended to match the lifetime of the reference (in this case, cref)
     */
 
 
+    std::cout << std::endl;
+    //////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "//////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "Lifetime extension doesn’t save dangling references" << '\n';
+    std::cout << "//////////////////////////////////////////////////////////////////" << '\n';
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    Consider the following program:
 
+    const int& returnByReference()
+    {
+        return 5;
+    }
+
+    int main()
+    {
+        const int& ref { returnByReference() }; // runtime error
+    }
+
+    In the above program, returnByReference() is returning a const reference to a value that will go out of scope when the 
+    function ends. This is normally a no-no, as it will result in a dangling reference. However, we also know that assigning 
+    a value to a const reference can extend the lifetime of that value. So which takes precedence here? Does 5 go out of 
+    scope first, or does ref extend the lifetime of 5?
+
+    The answer is that 5 goes out of scope first, then the reference to 5 is copied back to the caller, and then ref extends 
+    the lifetime of the now-dangling reference.
+
+    However, the following does work as expected:
+    */
+
+    const int& ref_2{ returnByValue_2() };// ok, we're extending the lifetime of the copy passed back to main
+    /*
+    In this case, the literal value 5 is first copied back into the scope of the caller (main), and then ref extends the 
+    lifetime of that copy.
+    */
+
+    
+    std::cout << std::endl;
+    //////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "//////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "Returning multiple values" << '\n';
+    std::cout << "//////////////////////////////////////////////////////////////////" << '\n';
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    C++ doesn’t contain a direct method for passing multiple values back to the caller. While you can sometimes restructure 
+    your code in such a way that you can pass back each data item separately (e.g. instead of having a single function return 
+    two values, have two functions each return a single value), this can be cumbersome and unintuitive.
+
+    Fortunately, there are several indirect methods that can be used.
+
+    As covered in lesson 11.3 -- Passing arguments by reference, out parameters provide one method for passing multiple bits 
+    of data back to the caller. We don’t recommend this method.
+
+    A second method involves using a data-only struct:
+    */
+    S s{ returnStruct() };
+    std::cout << s.m_x << ' ' << s.m_y << '\n';
+
+    /*
+    A third way is to use std::tuple. A tuple is a sequence of elements that may be different types, where the type of 
+    each element must be explicitly specified.
+
+    Here’s an example that returns a tuple, and uses std::get to get the nth element of the tuple (counting from 0):
+    */
+
+    std::tuple s2{ returnTuple() };// get our tuple
+    std::cout << std::get<0>(s2) << ' ' << std::get<1>(s2) << ' ' << std::get<3>(s2) << '\n';// use std::get<n> to get the nth element of the tuple (counting from 0)
+
+
+    /*
+    This works identically to the prior example.
+
+    You can also use std::tie to unpack the tuple into predefined variables, like so:
+    */
+    int a;
+    double b;
+    float c;
+    int d;
+    std::tie(a, b, c, d) = returnTuple();// put elements of tuple in variables a and b and c and d
+    std::cout << a << ' ' << b << ' ' << c << ' ' << d <<'\n';
+
+    /*
+    As of C++17, a structured binding declaration can be used to simplify splitting multiple returned values into 
+    separate variables:
+    */
+    auto [a2, b2, c2, d2]{ returnTuple() };// used structured binding declaration to put results of tuple in variables a,b,c,d
+
+    /*
+    Using a struct is a better option than a tuple if you’re using the struct in multiple places. 
+    However, for cases where you’re just packaging up these values to return and there would be no reuse from defining 
+    a new struct, a tuple is a bit cleaner since it doesn’t introduce a new user-defined data type.
+    */
+
+
+    std::cout << std::endl;
+    //////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "//////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "Conclusion" << '\n';
+    std::cout << "//////////////////////////////////////////////////////////////////" << '\n';
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    Most of the time, return by value will be sufficient for your needs. It’s also the most flexible and safest way to 
+    return information to the caller. However, return by reference or address can also be useful, particularly when 
+    working with dynamically allocated classes or structs. When using return by reference or address, make sure you 
+    are not returning a reference to, or the address of, a variable that will go out of scope when the function returns!
+    */
+
+    std::cout << std::endl;
+    //////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "//////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "Conclusion" << '\n';
+    std::cout << "//////////////////////////////////////////////////////////////////" << '\n';
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    Write function prototypes for each of the following functions. Use the most appropriate parameter and return types 
+    (by value, by address, or by reference), including use of const where appropriate.
+    */
+
+    /*
+    1) A function named sumTo() that takes an integer parameter and returns the sum of 
+    all the numbers between 1 and the input number. 
+    */
+    std::cout << "Please give me number for task nr 1: ";
+    int tNR{};
+    std::cin >> tNR;
+    std::cout << "Sum between 1 and " << tNR << " is: " << sumTo(tNR) << '\n';
+
+
+    /*
+    2) A function named printEmployeeName() that takes an Employee struct as input. 
+    */
+
+
+    
 
 
     return 0;
+}
+
+int sumTo(int x)
+{
+    if(x == 1)
+    {
+        return 1;
+    }
+    else
+    {   
+        return x + sumTo(x-1);
+    }
+}
+
+Employee printEmployeeName()
+{
+    
 }
