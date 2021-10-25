@@ -1,9 +1,15 @@
 #include <iostream>
 #include <array>
 #include <tuple>
+#include  <string>
+#include <utility> // for std::pair
+#include <vector>
 
 //function protytypes for Quiz time:
 int sumTo(int);
+void printEmployeeName(const struct Employee& emp);
+std::pair<int, int> minmax(int,int);
+int getIndexOfLargestValue(const std::vector<int>& array);
 
 int doubleValue(int x)
 {
@@ -66,7 +72,7 @@ struct Employee
 {
     //just for instance...
     int x; 
-    double y;
+    std::string name;
 };
 
 
@@ -397,9 +403,24 @@ int main()
     /*
     2) A function named printEmployeeName() that takes an Employee struct as input. 
     */
+    Employee emp;
 
 
-    
+    /*
+    3) A function named minmax() that takes two integers as input and returns back to the caller the smaller and larger 
+    number in a std::pair. A std::pair works identical to a std::tuple but stores exactly two elements. 
+    */
+    minmax(4, 7);
+
+    /*
+    4) A function named getIndexOfLargestValue() that takes an integer array (as a std::vector), and returns the index of 
+    the largest element in the array. 
+    */
+    std::vector array_quiz{23, 56, 67, 34, 56, 89, 123};
+    std::cout << "The largest element is: " << getIndexOfLargestValue(array_quiz) << '\n';
+
+
+
 
 
     return 0;
@@ -416,8 +437,29 @@ int sumTo(int x)
         return x + sumTo(x-1);
     }
 }
-
-Employee printEmployeeName()
+void printEmployeeName(const Employee& emp)
 {
-    
+
+}
+
+std::pair<int, int> minmax(int x, int y)
+{
+    return {x-y, x+y};
+}
+
+int getIndexOfLargestValue(const std::vector<int>& array)
+{
+    std::size_t lenght{ array.size() };
+
+    int theBigestIndex{ 0 };
+
+    for(int i{ 0 }; i < lenght; ++i)
+    {
+        if(array[i] > theBigestIndex)
+        {
+            theBigestIndex = array[i];
+        }
+    }
+
+    return theBigestIndex;
 }
