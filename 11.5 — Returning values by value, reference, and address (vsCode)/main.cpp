@@ -10,6 +10,7 @@ int sumTo(int);
 void printEmployeeName(const struct Employee& emp);
 std::pair<int, int> minmax(int,int);
 int getIndexOfLargestValue(const std::vector<int>& array);
+const std::string& getElement(const std::vector<std::string>& vec_str, std::size_t index);
 
 int doubleValue(int x)
 {
@@ -419,8 +420,13 @@ int main()
     std::vector array_quiz{23, 56, 67, 34, 56, 89, 123};
     std::cout << "The largest element is: " << getIndexOfLargestValue(array_quiz) << '\n';
 
+    /*
+    5) A function named getElement() that takes an array of std::string (as a std::vector) and an index and returns the array 
+    element at that index (not a copy). Assume the index is valid, and the return value is const.
+    */
+    std::vector<std::string> vec_str{"Jezus", "Chrystus", "jest", "Bogiem", "i", "Panem"};
 
-
+    std::cout << getElement(vec_str, 10) << '\n';
 
 
     return 0;
@@ -462,4 +468,20 @@ int getIndexOfLargestValue(const std::vector<int>& array)
     }
 
     return theBigestIndex;
+}
+
+const std::string& getElement(const std::vector<std::string>& vec_str, std::size_t index)
+{
+    std::size_t x{ index };
+
+    static std::string oj{ "error" };
+
+    if((index > 0) && (index < vec_str.size()))
+    {
+        return vec_str[x];
+    }
+    else
+    {
+        return oj;
+    }
 }
