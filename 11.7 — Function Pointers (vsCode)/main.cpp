@@ -1,5 +1,6 @@
 #include <iostream>
 #include <utility> // for std::swap
+#include <functional> //for std::function
 
 int foo()// code for foo starts at memory address 0x002717f0
 {
@@ -77,23 +78,59 @@ void SelectionSort_plus_our_function_pointer_parameter(int *array, int size, boo
     for(int startIndex{ 0 }; startIndex < (size-1); ++startIndex)
     {
         // smallestIndex is the index of the smallest element we've encountered so far.
-        int smallestIndex{ startIndex };
+        int bestIndex{ startIndex };
         
         // Look for smallest element remaining in the array (starting at startIndex+1)
         for(int currentIndex{ startIndex+1 }; currentIndex < size; ++currentIndex)
         {
-            // If the current element is smaller than our previously found smallest
-            if(ascending(array[smallestIndex], array[currentIndex]))// COMPARISON DONE HERE
+            // If the current element is smaller/larger than our previously found smallest
+            if(comparisonFcn(array[bestIndex], array[currentIndex]))// COMPARISON DONE HERE
             {
                 // This is the new smallest number for this iteration
-                smallestIndex = currentIndex;
+                bestIndex = currentIndex;
             }
-
         }
 
         // Swap our start element with our smallest element
-        std::swap(array[startIndex], array[smallestIndex]);
+        std::swap(array[startIndex], array[bestIndex]);
     }
+}
+
+// Here is a comparison function that sorts in ascending order
+// (Note: it's exactly the same as the previous ascending() function)
+bool ascending_for_Ptr(int x, int y)
+{
+    return x > y;// swap if the first element is greater than the second
+}
+
+// Here is a comparison function that sorts in descending order
+bool descending_for_Ptr(int x, int y)
+{
+    return x < y;// swap if the second element is greater than the firs
+}
+
+// This function prints out the values in the array
+void printArray(int *array, int size)
+{
+    for(int i{ 0 }; i < size; ++i)
+    {
+        std::cout << array[i] << ' ';
+    }
+    std::cout << '\n';
+}
+
+bool evensFirst(int x, int y)
+{
+    // if x is even and y is odd, x goes first (no swap needed)
+    if((x%2==0) && !(y%2==0))
+        return false;
+
+    // if x is odd and y is even, y goes first (swap needed)
+    if(!(x%2==0) && (y%2==0))
+        return true;
+
+    // otherwise sort in ascending order
+    return ascending_for_Ptr(x, y);
 }
 
 int main()
@@ -310,14 +347,155 @@ int main()
     Here’s a full example of a selection sort that uses a function pointer parameter to do a user-defined comparison, 
     along with an example of how to call it:
     */
+    int array[9]{3, 7, 9, 5, 6, 1, 8, 2, 4};
+
+    SelectionSort_plus_our_function_pointer_parameter(array, 9, descending_for_Ptr);
+    printArray(array, 9);
+
+    SelectionSort_plus_our_function_pointer_parameter(array, 9, ascending_for_Ptr);
+    printArray(array, 9);
+
+    /*
+    Is that cool or what? We’ve given the caller the ability to control how our selection sort does its job.
+    */
+
+    /*
+    The caller can even define their own “strange” comparison functions:
+    */
+    SelectionSort_plus_our_function_pointer_parameter(array, 9, evensFirst);
+    printArray(array, 9);
+
+    /*
+    As you can see, using a function pointer in this context provides a nice way to allow a caller to “hook” their own 
+    functionality into something you’ve previously written and tested, which helps facilitate code reuse! Previously, 
+    if you wanted to sort one array in descending order and another in ascending order, you’d need multiple versions 
+    of the sort routine. Now you can have one version that can sort any way the caller desires!
+
+    Note: If a function parameter is of a function type, it will be converted to a pointer to the function type. This means
+    void selectionSort(int *array, int size, bool (*comparisonFcn)(int, int))
+
+    can be equivalently written as:
+
+    void selectionSort(int *array, int size, bool comparisonFcn(int, int))
+
+    This only works for function parameters, not stand-alone function pointers, and so is of somewhat limited use.
+    */
 
 
+    std::cout << std::endl;
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "Providing default functions" << '\n';
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    If you’re going to allow the caller to pass in a function as a parameter, it can often be useful to provide some 
+    standard functions for the caller to use for their convenience. For example, in the selection sort example above, 
+    providing the ascending() and descending() function along with the selectionSort() function would make the caller’s 
+    life easier, as they wouldn’t have to rewrite ascending() or descending() every time they want to use them.
+
+    You can even set one of these as a default parameter:
+
+    // Default the sort to ascending sort
+    void selectionSort(int *array, int size, bool (*comparisonFcn)(int, int) = ascending);
+
+    In this case, as long as the user calls selectionSort normally (not through a function pointer), the comparisonFcn 
+    parameter will default to ascending.
+    */
 
 
+    std::cout << std::endl;
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "Making function pointers prettier with type aliases" << '\n';
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    Let’s face it -- the syntax for pointers to functions is ugly. However, type aliases can be used to make pointers to 
+    functions look more like regular variables:
+
+        using ValidateFunction = bool(*)(int, int);
+
+    This defines a type alias called “ValidateFunction” that is a pointer to a function that takes two ints and returns a bool.
+
+    Now instead of doing this:
+
+        bool validate(int x, int y, bool (*fcnPtr)(int, int)); // ugly
+
+    You can do this:
+
+        bool validate(int x, int y, ValidateFunction pfcn) // clean
+    */
 
 
+    std::cout << std::endl;
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "Using std::function" << '\n';
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    An alternate method of defining and storing function pointers is to use std::function, which is part of the standard 
+    library <functional> header. To define a function pointer using this method, declare a std::function object like so:
+
+    #include <functional>
+    bool validate(int x, int y, std::function<bool(int, int)> fcn); // std::function method that returns a bool and takes 
+    two int parameters
+
+    As you see, both the return type and parameters go inside angled brackets, with the parameters inside parenthesis. 
+    If there are no parameters, the parentheses can be left empty. Although this reads a little more verbosely, it’s 
+    also more explicit, as it makes it clear what the return type and parameters expected are (whereas the typedef method 
+    obscures them).
+
+    Updating our earlier example with std::function:
+    */
+    std::function<int()> fcn_foo_ptr{ &foo };// declare function pointer that returns an int and takes no parameters
+    fcn_foo_ptr = &goo;// fcnPtr now points to function goo 
+
+    std::cout << fcn_foo_ptr() << '\n';// call the function just like normal
+
+    /*
+    Note that you can also type alias std::function:
+
+    using ValidateFunctionRaw = bool(*)(int, int); // type alias to raw function pointer
+    using ValidateFunction = std::function<bool(int, int)>; // type alias to std::function
+    */
 
 
+    std::cout << std::endl;
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "Type inference for function pointers" << '\n';
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    Much like the auto keyword can be used to infer the type of normal variables, the auto keyword can also 
+    infer the type of a function pointer.
+    */
+    auto function_ptr_goo{ &foo2 };
+
+    std::cout << function_ptr_goo(123) << '\n';
+
+    /*
+    This works exactly like you’d expect, and the syntax is very clean. The downside is, of course, that all of the 
+    details about the function’s parameters types and return type are hidden, so it’s easier to make a mistake when 
+    making a call with the function, or using its return value.
+    */
+    
+    
+    std::cout << std::endl;
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "Conclusion" << '\n';
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    Function pointers are useful primarily when you want to store functions in an array (or other structure), or when you need 
+    to pass a function to another function. Because the native syntax to declare function pointers is ugly and error prone, 
+    we recommend using std::function. In places where a function pointer type is only used once (e.g. a single parameter or 
+    return value), std::function can be used directly. In places where a function pointer type is used multiple times, a 
+    type alias to a std::function is a better choice (to prevent repeating yourself).
+    */
 
     return 0;
 }
