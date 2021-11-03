@@ -1,6 +1,19 @@
 #include <iostream>
 #include <vector>
 
+void printStack(const std::vector<int>& stack)
+{
+    for(auto element : stack)
+        std::cout << element << ' ';
+    std::cout << "(cap " << stack.capacity() << " length " << stack.size() << ")\n";
+}
+
+void printStack_double(const std::vector<double>& stack)
+{
+    for(auto element : stack)
+        std::cout << element << ' ';
+    std::cout << "(cap " << stack.capacity() << " length " << stack.size() << ")\n";
+}
 
 int main()
 {
@@ -75,8 +88,114 @@ int main()
     std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
     ////////////////////////////////////////////////////////////////////////////////////////////
     /*
-    
+    Why differentiate between length and capacity? std::vector will reallocate its memory if needed, but like Melville’s 
+    Bartleby, it would prefer not to, because resizing an array is computationally expensive. Consider the following:
     */
+    std::vector<int> array_one{};
+    array_one = {0, 1, 2, 3, 4};// okay, array length = 5
+    std::cout << "length: " << array_one.size() << " capacity: " << array_one.capacity() << '\n';
+
+    array_one = {9, 8, 7};// okay, array length is now 3!
+    std::cout << "length: " << array_one.size() << " capacity: " << array_one.capacity() << '\n';
+
+    /*
+    Note that although we assigned a smaller array to our vector, it did not reallocate its memory (the capacity is still 5). 
+    It simply changed its length, so it knows that only the first 3 elements are valid at this time.
+    */
+
+
+    std::cout << std::endl;
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "Array subscripts and at() are based on length, not capacity" << '\n';
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    The range for the subscript operator ([]) and at() function is based on the vector’s length, not the capacity. 
+    Consider the array in the previous example, which has length 3 and capacity 5. What happens if we try to access 
+    the array element with index 4? The answer is that it fails, since 4 is greater than the length of the array.
+
+    Note that a vector will not resize itself based on a call to the subscript operator or at() function!
+    */
+
+
+    std::cout << std::endl;
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "Stack behavior with std::vector" << '\n';
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    If the subscript operator and at() function are based on the array length, and the capacity is always at least as 
+    large as the array length, why even worry about the capacity at all? Although std::vector can be used as a dynamic array, 
+    it can also be used as a stack. To do this, we can use 3 functions that match our key stack operations:
+
+    push_back() pushes an element on the stack.
+    back() returns the value of the top element on the stack.
+    pop_back() pops an element off the stack.
+    */
+    std::vector<int> stack{};
+
+    printStack(stack);
+
+    stack.push_back(5); // push_back() pushes an element on the stack
+    printStack(stack);
+
+    stack.push_back(3); 
+    printStack(stack);
+
+    stack.push_back(2); 
+    printStack(stack);
+
+    std::cout << "top: " << stack.back() << '\n';// back() returns the last element
+
+    stack.pop_back();// pop_back() pops an element off the stack
+    printStack(stack);
+
+    stack.pop_back();
+    printStack(stack);
+
+    stack.pop_back();
+    printStack(stack);
+
+
+    /*
+    Unlike array subscripts or at(), the stack-based functions will resize the std::vector if necessary. 
+    In the example above, the vector gets resized 3 times (from a capacity of 0 to 1, 1 to 2, and 2 to 3).
+
+    Because resizing the vector is expensive, we can tell the vector to allocate a certain amount of capacity up 
+    front using the reserve() function:
+    */
+    stack.reserve(77);// Set the capacity to (at least) 77
+    printStack(stack);
+
+
+    std::cout << std::endl;
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "Vectors may allocate extra capacity" << '\n';
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    When a vector is resized, the vector may allocate more capacity than is needed. This is done to provide some 
+    “breathing room” for additional elements, to minimize the number of resize operations needed. Let’s take a look at this:
+    */
+    std::vector<double> double_vector{12.2, 12.3, 12.4, 12.5, 12,6 };
+    std::cout << "size: " << double_vector.size() << " cap: " << double_vector.capacity() << '\n';
+
+    double_vector.push_back(77.77);// add another element
+    std::cout << "size: " << double_vector.size() << " cap: " << double_vector.capacity() << '\n';
+
+    printStack_double(double_vector);
+
+    /*
+    When we used push_back() to add a new element, our vector only needed room for 6 elements, but allocated room for 12. 
+    This was done so that if we were to push_back() another element, it wouldn’t need to resize immediately.
+
+    If, when, and how much additional capacity is allocated is left up to the compiler implementer.
+
+    */
+
 
 
     return 0;
