@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 void countDown(int count)
 {
@@ -27,6 +28,80 @@ int sumTo(int sumto)
     else
         return sumTo(sumto-1) + sumto;// recursive function call
 }
+
+std::size_t Fibonacci(std::size_t x)
+{
+    //F(n) =	0 if n = 0
+    //1 if n = 1
+    //f(n-1) + f(n-2) if n > 1
+
+    if(x == 0)// base case (termination condition)
+        return 0;
+    else if(x == 1)// base case (termination condition)
+        return 1;
+    else
+        return (Fibonacci(x-1) + Fibonacci(x-2));
+ }
+
+// h/t to potterman28wxcv for a variant of this code
+std::size_t Fibonacci_memoized_version(std::size_t x)
+{
+    // We'll use a static std::vector to cache calculated results
+    static std::vector<int> results{0, 1};
+
+    if(x < static_cast<int>(std::size(results)))
+        return results[x];
+    else
+    {
+        // Otherwise calculate the new result and add it
+        results.push_back(Fibonacci(x - 1) + Fibonacci(x - 2));
+        return results[x];
+    }
+}
+
+int factorial_of_an_integer_N(int x)
+{
+    if(x <= 1)
+        return 1;
+    else
+        return x * factorial_of_an_integer_N(x - 1);
+}
+
+int how_many_digits(int number)
+{
+    int count{ 0 };
+
+    while (number != 0)
+    {
+        number = number / 10;
+        count++;
+    }
+    return count;
+}
+
+int quesion_two(int number)
+{
+    int how_many_dig{ how_many_digits(number) };
+
+    std::vector<int> q2;
+
+    int equal{ 0 };
+
+    if(how_many_dig <= 1)
+        return number;
+    else
+    {
+        q2.reserve(how_many_dig);
+        q2.push_back(how_many_dig);
+        return q2;
+    }
+
+    for(int i{ 0 }; i < how_many_dig; i++)
+    {
+        std::cout << q2[i] + q2[i+1] << '\n';
+    }
+}
+
 
 int main()
 {
@@ -152,10 +227,155 @@ int main()
     Note that in the above code, we recurse with value sumto - 1 rather than --sumto. We do this because operator- has a 
     side effect, and using a variable that has a side effect applied more than once in a given expression will result in 
     undefined behavior. Using sumto - 1 avoids side effects, making sumto safe to use more than once in the expression.
-        */
+    */
+    
+
+    std::cout << std::endl;
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "Recursive algorithms" << '\n';
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    Recursive functions typically solve a problem by first finding the solution to a subset of the problem (recursively), 
+    and then modifying that sub-solution to get to a solution. In the above algorithm, sumTo(value) first solves sumTo(value-1), 
+    and then adds the value of variable value to find the solution for sumTo(value).
+
+    In many recursive algorithms, some inputs produce trivial outputs. For example, sumTo(1) has the trivial output 1 (you can 
+    calculate this in your head), and does not benefit from further recursion. Inputs for which an algorithm trivially produces 
+    an output is called a base case. Base cases act as termination conditions for the algorithm. Base cases can often 
+    be identified by considering the output for an input of 0, 1, “”, ”, or null.
+    */
 
 
+    std::cout << std::endl;
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "Fibonacci numbers" << '\n';
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    One of the most famous mathematical recursive algorithms is the Fibonacci sequence. Fibonacci sequences appear in many places in nature, such as branching of trees, the spiral of shells, the fruitlets of a pineapple, an uncurling fern frond, and the arrangement of a pine cone.
 
+    Here is a picture of a Fibonacci spiral:
+
+    https://www.learncpp.com/cpp-tutorial/recursion/
+
+    Each of the Fibonacci numbers is the length of the side of the square that the number appears in.
+
+    Fibonacci numbers are defined mathematically as:
+
+    F(n) =	0 if n = 0
+    1 if n = 1
+    f(n-1) + f(n-2) if n > 1
+    */
+    for(std::size_t i{ 0 }; i < 13; ++i)
+    {
+        std::cout << Fibonacci(i) << ' ';
+    }
+    std::cout << std::endl;
+
+    /*
+    Running the program produces the following result:
+
+    0 1 1 2 3 5 8 13 21 34 55 89 144
+
+    Which you will note are exactly the numbers that appear in the Fibonacci spiral diagram.
+    */
+
+
+    std::cout << std::endl;
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "Memoization algorithms" << '\n';
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    The above recursive Fibonacci algorithm isn’t very efficient, in part because each call to a Fibonacci non-base case 
+    results in two more Fibonacci calls. This produces an exponential number of function calls (in fact, the above example 
+    calls fibonacci() 1205 times!). There are techniques that can be used to reduce the number of calls necessary. 
+    One technique, called memoization, caches the results of expensive function calls so the result can be returned when 
+    the same input occurs again.
+
+    Here’s a memoized version of the recursive Fibonacci algorithm:
+    */
+    for(std::size_t i{ 0 }; i < 20; ++i)
+    {
+        std::cout << Fibonacci_memoized_version(i) << ' ';
+    }
+    std::cout << std::endl;
+
+    /*
+    This memoized version makes 35 function calls, which is much better than the 1205 of the original algorithm.
+    */
+
+
+    std::cout << std::endl;
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "Recursive vs iterative" << '\n';
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    One question that is often asked about recursive functions is, “Why use a recursive function if you can do many of 
+    the same tasks iteratively (using a for loop or while loop)?”. It turns out that you can always solve a recursive 
+    problem iteratively -- however, for non-trivial problems, the recursive version is often much simpler to write (and read). 
+    For example, while it’s possible to write the Fibonacci function iteratively, it’s a little more difficult! (Try it!)
+
+    Iterative functions (those using a for-loop or while-loop) are almost always more efficient than their recursive counterparts. 
+    This is because every time you call a function there is some amount of overhead that takes place in pushing and popping 
+    stack frames. Iterative functions avoid this overhead.
+
+    That’s not to say iterative functions are always a better choice. Sometimes the recursive implementation of a function 
+    is so much cleaner and easier to follow that incurring a little extra overhead is more than worth it for the benefit in 
+    maintainability, particularly if the algorithm doesn’t need to recurse too many times to find a solution.
+
+    In general, recursion is a good choice when most of the following are true:
+
+        The recursive code is much simpler to implement.
+        The recursion depth can be limited (e.g. there’s no way to provide an input that will cause it to recurse down 
+        100,000 levels).
+        The iterative version of the algorithm requires managing a stack of data.
+        This isn’t a performance-critical section of code.
+
+    However, if the recursive algorithm is simpler to implement, it may make sense to start recursively and then optimize 
+    to an iterative algorithm later.
+
+    Best practice
+
+    Generally favor iteration over recursion, except when recursion really makes sense.
+    */
+
+
+    std::cout << std::endl;
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "Quiz time" << '\n';
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    1)     
+    A factorial of an integer N (written N!) is defined as the product (multiplication) of all the numbers 
+    between 1 and N (0! = 1). Write a recursive function called factorial that returns the factorial of the input. 
+    Test it with the first 7 factorials.
+
+    Hint: Remember that (x * y) = (y * x), so the product of all the numbers between 1 and N is the same as the product 
+    of all the numbers between N and 1.
+    */
+    std::cout << factorial_of_an_integer_N(6) << '\n';    
+
+    /*
+    2)
+    Write a recursive function that takes an integer as input and returns the sum of each individual digit 
+    in the integer (e.g. 357 = 3 + 5 + 7 = 15). Print the answer for input 93427 (which is 25). 
+    Assume the input values are positive.
+    */
+    int x{ how_many_digits() };
+
+    for(int i{ 0 }; i < x; ++i)
+    {
+
+    }
 
 
 
