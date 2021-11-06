@@ -67,43 +67,14 @@ int factorial_of_an_integer_N(int x)
         return x * factorial_of_an_integer_N(x - 1);
 }
 
-int how_many_digits(int number)
+
+
+int quesion_two(int x)
 {
-    int count{ 0 };
-
-    while (number != 0)
-    {
-        number = number / 10;
-        count++;
-    }
-    return count;
-}
-
-int quesion_two(int how_many_digits, int number)
-{
-    int our_return_NR{ 0 };
-
-    std::vector<int> our_vector(how_many_digits);
-
-
-    if(how_many_digits <= 1)
-        return number;
+    if(x < 10)
+        return x;
     else
-    {
-        our_vector.reserve(how_many_digits);
-
-        for(int i{ 0 }; i < how_many_digits; ++i)
-        {
-            std::cin >> our_vector[i];
-        }
-
-        for(int i{ 0 }; i < how_many_digits; ++i)
-        {
-            our_return_NR = our_vector[i] + our_vector[i+1];
-        }
-        
-        return our_return_NR;
-    }
+        return quesion_two(x / 10) + x % 10;
 }
 
 
@@ -374,16 +345,8 @@ int main()
     in the integer (e.g. 357 = 3 + 5 + 7 = 15). Print the answer for input 93427 (which is 25). 
     Assume the input values are positive.
     */
-    std::cout << "Enter number: ";
-    int y{};
-    std::cin >> y;
-
-    std::cout << "Your number have: " << how_many_digits(y) << " digits.\n";
-
-    int answer{ quesion_two(how_many_digits(y), y) };
-
-    std::cout << answer << '\n';
     
+    std::cout << quesion_two(123) << '\n';
 
 
 
