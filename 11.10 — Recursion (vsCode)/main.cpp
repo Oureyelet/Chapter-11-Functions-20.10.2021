@@ -79,26 +79,30 @@ int how_many_digits(int number)
     return count;
 }
 
-int quesion_two(int number)
+int quesion_two(int how_many_digits, int number)
 {
-    int how_many_dig{ how_many_digits(number) };
+    int our_return_NR{ 0 };
 
-    std::vector<int> q2;
+    std::vector<int> our_vector(how_many_digits);
 
-    int equal{ 0 };
 
-    if(how_many_dig <= 1)
+    if(how_many_digits <= 1)
         return number;
     else
     {
-        q2.reserve(how_many_dig);
-        q2.push_back(how_many_dig);
-        return q2;
-    }
+        our_vector.reserve(how_many_digits);
 
-    for(int i{ 0 }; i < how_many_dig; i++)
-    {
-        std::cout << q2[i] + q2[i+1] << '\n';
+        for(int i{ 0 }; i < how_many_digits; ++i)
+        {
+            std::cin >> our_vector[i];
+        }
+
+        for(int i{ 0 }; i < how_many_digits; ++i)
+        {
+            our_return_NR = our_vector[i] + our_vector[i+1];
+        }
+        
+        return our_return_NR;
     }
 }
 
@@ -370,13 +374,16 @@ int main()
     in the integer (e.g. 357 = 3 + 5 + 7 = 15). Print the answer for input 93427 (which is 25). 
     Assume the input values are positive.
     */
-    int x{ how_many_digits() };
+    std::cout << "Enter number: ";
+    int y{};
+    std::cin >> y;
 
-    for(int i{ 0 }; i < x; ++i)
-    {
+    std::cout << "Your number have: " << how_many_digits(y) << " digits.\n";
 
-    }
+    int answer{ quesion_two(how_many_digits(y), y) };
 
+    std::cout << answer << '\n';
+    
 
 
 
