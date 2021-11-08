@@ -77,6 +77,19 @@ int quesion_two(int x)
         return quesion_two(x / 10) + x % 10;
 }
 
+void question_three(int x)
+{
+    // Termination cas
+    if(x == 0)
+        return;
+    
+    // Recurse to the next bit
+    question_three(x/2);
+
+    // Print out the remainders (in reverse order)
+    std::cout << x % 2;
+}
+
 
 int main()
 {
@@ -349,8 +362,19 @@ int main()
     std::cout << quesion_two(123) << '\n';
 
 
+    /*
+    3a) This one is slightly trickier. Write a program that asks the user to enter a positive integer, and then uses a 
+    recursive function to print out the binary representation for that number. 
+    Use method 1 from lesson O.4 -- Converting between binary and decimal.
 
+    Hint: Using method 1, we want to print the bits from the “bottom up”, which means in reverse order. 
+    This means your print statement should be after the recursive call.
+    */
+    int x_q{};
+    std::cout << "Enter a positive integer: ";
+    std::cin >> x_q;
 
+    question_three(x_q);
 
 
 
