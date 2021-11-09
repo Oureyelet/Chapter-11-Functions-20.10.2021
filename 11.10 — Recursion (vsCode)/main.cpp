@@ -90,6 +90,16 @@ void question_three(int x)
     std::cout << x % 2;
 }
 
+unsigned int question_threeB(unsigned int x)
+{
+    if(x == 0)
+        return 0;
+    
+        question_three(x/2);
+
+        std::cout << x % 2;
+}
+
 
 int main()
 {
@@ -376,6 +386,24 @@ int main()
 
     question_three(x_q);
 
+    std::cout << '\n';
+
+    /*
+    3b) Update your code from 3a to handle the case where the user may enter 0 or a negative number.
+
+    Here’s a sample output (assuming 32-bit integers):
+
+    Enter an integer: -15
+    11111111111111111111111111110001
+
+    Hint: You can turn a negative integer into a positive one by converting it to an unsigned integer. These have 
+    identical bit representations (the type is used to determine how to interpret the number into decimal).
+    */
+    unsigned int x_qq{};
+    std::cout << "Enter a negative integer: ";
+    std::cin >> x_qq;
+
+    question_threeB(x_qq);
 
 
     return 0;
