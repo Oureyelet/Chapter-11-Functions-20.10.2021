@@ -97,6 +97,8 @@ double findAverage_Method_3(std::string decoder, ...)
         case '\0':
             va_end(list);
             return sum / count;
+
+        case
         }
     }
     
