@@ -76,16 +76,24 @@ double findAverage_Method_2(int first, ...)
     return sum / count;
 }
 
+// The ellipsis must be the last parameter
 double findAverage_Method_3(std::string decoder, ...)
 {
     double sum{ 0 };
 
+    // We access the ellipsis through a va_list, so let's declare one
     va_list list;
 
+    /*
+    We initialize the va_list using va_start. The first parameter is
+	the list to initialize. The second parameter is the last non-ellipsis
+	parameter.
+    */
     va_start(list, decoder);
 
     int count = 0;
 
+    // Loop indefinitely
     while (true)
     {
         char codeType{ decoder[count] };
@@ -95,13 +103,20 @@ double findAverage_Method_3(std::string decoder, ...)
         default:
         
         case '\0':
+            // Cleanup the va_list when we're done.
             va_end(list);
             return sum / count;
 
-        case
+        case 'i':
+            sum += va_arg(list, int);
+            ++count;
+            break;
+        case 'd':
+            sum += va_arg(list, int);
+            ++count;
+            break;
         }
     }
-    
 }
 
 int main(int argc, char* argv[])
@@ -329,6 +344,52 @@ int main(int argc, char* argv[])
     /*
     Method #3 involves passing a “decoder string” that tells the program how to interpret the parameters.
     */
+    std::cout << findAverage_Method_3("iiiii", 1, 2, 3, 4, 5) << '\n';
+    std::cout << findAverage_Method_3("iiiiii", 1, 2, 3, 4, 5, 6) << '\n';
+    std::cout << findAverage_Method_3("iiddi", 1, 2, 3.5, 4.5, 5) << '\n';
+
+    /*
+    In this example, we pass a string that encodes both the number of optional variables and their types. 
+    The cool thing is that this lets us deal with parameters of different types. However, this method has 
+    downsides as well: the decoder string can be a bit cryptic, and if the number or types of the optional 
+    parameters don’t match the decoder string precisely, bad things can happen.
+
+    For those of you coming from C, this is what printf does!
+    */
+
+
+    std::cout << std::endl;
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "///////////////////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "Recommendations for safer use of ellipsis" << '\n';
+    std::cout << "///////////////////////////////////////////////////////////////////////////////" << '\n';
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    First, if possible, do not use ellipsis at all! Oftentimes, other reasonable solutions are available, even if they 
+    require slightly more work. For example, in our findAverage() program, we could have passed in a dynamically sized 
+    array of integers instead. This would have provided both strong type checking (to make sure the caller doesn’t try 
+    to do something nonsensical) while preserving the ability to pass a variable number of integers to be averaged.
+
+    Second, if you do use ellipsis, do not mix expected argument types within your ellipsis if possible. Doing so vastly 
+    increases the possibility of the caller inadvertently passing in data of the wrong type and va_arg() producing a garbage 
+    result.
+
+    Third, using a count parameter or decoder string as part of the argument list is generally safer than using a sentinel 
+    as an ellipsis parameter. This forces the user to pick an appropriate value for the count/decoder parameter, which 
+    ensures the ellipsis loop will terminate after a reasonable number of iterations even if it produces a garbage value.
+
+    For advanced readers
+
+    To improve upon ellipses-like functionality, C++11 introduced parameter packs and variadic templates, which offers 
+    functionality similar to ellipses, but with strong type checking. However, significant usability challenges impeded 
+    adoption of this feature.
+
+    In C++17, fold expressions were added, which significantly improves the usability of parameter packs, to the point 
+    where they are now a viable option.
+
+    We hope to introduce lessons on these topics in a future site update.
+    */
+
 
 
 
