@@ -195,7 +195,7 @@ int main()
     lambda to a function as a parameter and the caller determines what lambda will be passed in), we can’t use auto 
     without compromises. In such cases, std::function can be used.
     */
-    
+
 
 
 
