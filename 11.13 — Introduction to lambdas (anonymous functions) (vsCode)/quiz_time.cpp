@@ -1,15 +1,26 @@
 #include <iostream>
-#include <functional>
+#include <functional> // std::functions
 #include <array>
 #include <string>
 #include <string_view>
+#include <algorithm> // for std::max_element, std::sort
 
-struct student
+struct Student
 {
     std::string name{};
     int point{};
 };
 
+static bool pkt_compare(int a, int b)
+{
+    return (a > b);
+}
+
+struct Season
+{
+  std::string_view name{};
+  double averageTemperature{};
+};
 
 int main()
 {
@@ -44,8 +55,45 @@ int main()
 
     Dan is the best student
     */
-    std::array students{}
+    std::array<Student, 8> arr_Q1{
+        {   { "Albert", 3 },
+            { "Ben", 5 },
+            { "Christine", 2 },
+            { "Dan", 8 },
+            { "Enchilada", 4 },
+            { "Francis", 1 },
+            { "Greg", 3 },
+            { "Hagrid", 5 }  }
+    };
 
+    const auto max {std::max_element(arr_Q1.begin(),
+                                arr_Q1.end(),
+                                [](const Student& a, const Student& b) { return (a.point <   b.point); })};
+
+    std::cout << max->name << " is the best student\n";
+
+
+    /*
+    Question #2
+
+    Use std::sort and a lambda in the following code to sort the seasons by ascending average temperature.
+    */
+
+     std::array<Season, 4> seasons{
+        { { "Spring", 285.0 },
+        { "Summer", 296.0 },
+        { "Fall", 288.0 },
+        { "Winter", 263.0 } }
+    };
+    
+    std::sort(seasons.begin(), 
+              seasons.end(), 
+              [](const Season& a, const Season& b) { return (a.averageTemperature < b.averageTemperature); });
+
+    for (const auto& season : seasons)
+    {
+        std::cout << season.name << '\n';
+    }
 
 
     return 0;
