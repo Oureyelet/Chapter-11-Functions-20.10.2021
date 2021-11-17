@@ -3,6 +3,18 @@
 #include <array>
 #include <string_view>
 #include <string>
+#include <vector>
+
+struct Car
+{
+    std::string make{};
+    std::string model{};
+};
+
+struct CEnemy
+{
+
+};
 
 int main()
 {
@@ -152,8 +164,74 @@ int main()
     std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
     ////////////////////////////////////////////////////////////////////////////////////////////
     /*
+    Much like functions can change the value of arguments passed by reference, we can also capture variables by reference 
+    to allow our lambda to affect the value of the argument.
 
+    To capture a variable by reference, we prepend an ampersand (&) to the variable name in the capture. Unlike variables 
+    that are captured by value, variables that are captured by reference are non-const, unless the variable they’re capturing 
+    is const. Capture by reference should be preferred over capture by value whenever you would normally prefer passing an 
+    argument to a function by reference (e.g. for non-fundamental types).
+
+    Here’s the above code with ammo captured by reference:
     */
+    /*
+    auto shoot{
+    // We don't need mutable anymore
+    [&ammo]() { // &ammo means ammo is captured by reference
+      // Changes to ammo will affect main's ammo
+      --ammo;
+    */
+
+    //Now, let’s use a reference capture to count how many comparisons std::sort makes when it sorts an array:
+
+    std::array<Car, 3> arr_car{ { { "Volkswagen", "Golf" },
+                                  { "Toyota", "Corolla" },
+                                  { "Honda", "Civic" } } };
+
+    int comparisons{ 0 };
+
+    std::sort(arr_car.begin(), arr_car.end(),
+                [&comparisons](const Car& a, const Car& b){
+                    ++comparisons;
+                    return (a.make < b.make);
+                });
+
+    std::cout << "Comparisons " << comparisons << '\n';
+
+    for(const auto& car : arr_car )
+    {
+        std::cout << car.make << ' ' << car.model << '\n';
+    }
+
+
+    std::cout << std::endl;
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "Capturing multiple variables" << '\n';
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    Multiple variables can be captured by separating them with a comma. 
+    This can include a mix of variables captured by value or by reference:
+    */
+    int health{ 33 };
+    int armor{ 100 };
+
+    std::vector<CEnemy> enemies{};
+
+    [health, armor, &enemies](){};
+
+
+    std::cout << std::endl;
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "Default captures" << '\n';
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    
+    */
+
 
     return 0;
 }
