@@ -229,9 +229,166 @@ int main()
     std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
     ////////////////////////////////////////////////////////////////////////////////////////////
     /*
-    
+    Having to explicitly list the variables you want to capture can be burdensome. If you modify your lambda, 
+    you may forget to add or remove captured variables. Fortunately, we can enlist the compiler’s help to auto-generate a 
+    list of variables we need to capture.
+
+    A default capture (also called a capture-default) captures all variables that are mentioned in the lambda. 
+    Variables not mentioned in the lambda are not captured if a default capture is used.
+
+    To capture all used variables by value, use a capture value of =.
+    To capture all used variables by reference, use a capture value of &.
+
+    Here’s an example of using a default capture by value:
+    */
+    std::array areas{ 100, 25, 121, 40, 56 };
+
+    int width{};
+    int lenght{};
+
+    std::cout << "Enter width and height: ";
+    std::cin >> width >> lenght;
+
+    auto found_area{ std::find_if(areas.begin(), areas.end(), 
+                            [=] (int knownArea) { // will default capture width and height by value
+                                return (width * lenght == knownArea); // because they're mentioned here
+                            }) };
+
+    if(found_area == areas.end())
+    {
+        std::cout << "I don't know this area :(\n";
+    }
+    else
+    {
+        std::cout << "Area found :)\n";
+    }
+
+    /*
+    Default captures can be mixed with normal captures. We can capture some variables by value and others by 
+    reference, but each variable can only be captured once.
+
+    int health{ 33 };
+    int armor{ 100 };
+    std::vector<CEnemy> enemies{};
+
+    // Capture health and armor by value, and enemies by reference.
+    [health, armor, &enemies](){};
+
+    // Capture enemies by reference and everything else by value.
+    [=, &enemies](){};
+
+    // Capture armor by value and everything else by reference.
+    [&, armor](){};
+
+    // Illegal, we already said we want to capture everything by reference.
+    [&, &armor](){};
+
+    // Illegal, we already said we want to capture everything by value.
+    [=, armor](){};
+
+    // Illegal, armor appears twice.
+    [armor, &health, &armor](){};
+
+    // Illegal, the default capture has to be the first element in the capture group.
+    [armor, &](){};
     */
 
+
+    std::cout << std::endl;
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "Defining new variables in the lambda-capture" << '\n';
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    Sometimes we want to capture a variable with a slight modification or declare a new variable that is only 
+    visible in the scope of the lambda. We can do so by defining a variable in the lambda-capture without specifying its type.
+    */
+    std::array areas_007{ 100, 25, 121, 40, 56 };
+
+    int width_007{};
+    int lenght_007{};
+
+    std::cout << "Enter width and height: ";
+    std::cin >> width_007 >> lenght_007;
+
+    // We store areas, but the user entered width and height.
+    // We need to calculate the area before we can search for it.
+    auto found_area_007{ std::find_if(areas_007.begin(), areas_007.end(), 
+                            // Declare a new variable that's visible only to the lambda.
+                           // The type of userArea is automatically deduced to int.
+                            [userArea(width_007 * lenght_007)] (int knownArea_007) { 
+                                return (userArea == knownArea_007);
+                            }) };
+
+    if(found_area_007 == areas_007.end())
+    {
+        std::cout << "I don't know this area :(\n";
+    }
+    else
+    {
+        std::cout << "Area found :)\n";
+    }
+
+
+    /*
+    userArea will only be calculated once when the lambda is defined. The calculated area is stored in the lambda object 
+    and is the same for every call. If a lambda is mutable and modifies a variable that was defined in the capture, the 
+    original value will be overridden.
+
+    Best practice
+
+    Only initialize variables in the capture if their value is short and their type is obvious. Otherwise it’s best to 
+    define the variable outside of the lambda and capture it.
+    */
+
+
+    std::cout << std::endl;
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "Dangling captured variables" << '\n';
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    https://www.learncpp.com/cpp-tutorial/lambda-captures/
+    */
+
+    
+    std::cout << std::endl;
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    std::cout << "Unintended copies of mutable lambdas" << '\n';
+    std::cout << "////////////////////////////////////////////////////////////////////" << '\n';
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    Because lambdas are objects, they can be copied. In some cases, this can cause problems. Consider the following code:
+    */  
+    int i{ 0 };
+
+    // Create a new lambda named count
+    auto count{ [i]() mutable {
+        std::cout << ++i << '\n';
+    } };
+
+    count();// invoke count
+
+    auto otherCount{ count };// create a copy of count
+
+    // invoke both count and the copy
+    count();
+    otherCount();
+
+    /*
+    Rather than printing 1, 2, 3, the code prints 2 twice. When we created otherCount as a copy of count, we 
+    created a copy of count in its current state. count‘s i was 1, so otherCount‘s i is 1 as well. Since otherCount 
+    is a copy of count, they each have their own i.
+
+    If we want to keep our incremenntation we need to change for references captures:
+
+     auto count{ [&i]() {
+        std::cout << ++i << '\n';
+    } };
+    */
 
     return 0;
 }
