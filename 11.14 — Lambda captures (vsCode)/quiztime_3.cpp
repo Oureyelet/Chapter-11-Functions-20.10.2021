@@ -3,7 +3,7 @@
 #include <random> // for std::mt19937
 #include <ctime> // for std::time
 #include <vector>
-#include <algorithm> // for std::find
+#include <algorithm> // for std::find // std::min_elements
 
 void printStack(const std::vector<double>& stack)
 {
@@ -142,8 +142,14 @@ int main()
         std::cin >> choice;
         auto found{ std::find(stack.begin(), stack.end(), choice) };
 
-        if(found != stack.end())
+        if(i < 2)
         {
+            std::cout << "Nice! You found all numbers, good job!\n";
+            break;
+        }
+
+        if(found != stack.end())
+        { 
             stack.erase(found);
             std::cout << "Nice! " << i - 1 << " numbers left.\n";
         }
@@ -152,12 +158,23 @@ int main()
             std::cout << choice << " is wrong!\n";
         }
 
-        if(i == 0)
-        {
-            std::cout << "Nice! You found all numbers, good job!\n";
-            break;
-        }
+        auto wrong{std::min_element(stack.begin(), stack.end(),
+                                [&choice]() {
+                                    if(true)
+                                    {
+                                        std::cout << choice <<  " is wrong! Try " << choice + 4 <<  " next time.\n";
+                                    }
+                                    else
+                                    {
+                                        std::cout << choice << " is wrong!\n";
+                                    }
+                                      })};
+
+        
     }
+        
+
+    
 
     return 0;
 }
