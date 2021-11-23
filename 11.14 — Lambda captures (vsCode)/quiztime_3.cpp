@@ -157,24 +157,7 @@ int main()
         {
             std::cout << choice << " is wrong!\n";
         }
-
-        auto wrong{std::min_element(stack.begin(), stack.end(),
-                                [&choice]() {
-                                    if(true)
-                                    {
-                                        std::cout << choice <<  " is wrong! Try " << choice + 4 <<  " next time.\n";
-                                    }
-                                    else
-                                    {
-                                        std::cout << choice << " is wrong!\n";
-                                    }
-                                      })};
-
-        
     }
         
-
-    
-
     return 0;
 }
