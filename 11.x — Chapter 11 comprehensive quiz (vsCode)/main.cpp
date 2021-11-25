@@ -11,20 +11,8 @@ void swap_int(int& a, int& b);
 //
 
 int doSomething()
-{   //target: 2
-    //min: 0   max: 5 (-1 for index...)
-    //ceter: array[2] = 3
-    //
-    //target: 2
-    //min: 0   max: 3 (-1 for index...)
-    //ceter: array[0] = 1
-    //
-    //target: 2
-    //min: 0   max: 2 (-1 for index...)
-    //ceter: array[0] = 2
-    
-
-    int array[]{/* 1, */2, 3,// 4, 5 };
+{   
+    int array[]{ 1, 2, 3, 4, 5 };
     return array[3];
 }
 
@@ -34,33 +22,75 @@ int doSomething()
 // max is the index of the upper bounds of the array we're searching.
 // binarySearch() should return the index of the target element if the target is found, -1 otherwise
 int binarySearch(const int* array, int target, int min, int max)
-{   //for example max = 8;
-    int center_element{static_cast<double>(std::floor( max / 2 )) }; // = 4
+{  
+    int center_element{static_cast<double>(std::floor( max / 2 )) }; // = index of array.
  
     for(int i{ min }; i < static_cast<int>(std::size(array)) - 1; ++i)
     {
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if(array[center_element] > target)
         {
-            int center_element_NEST_1{static_cast<double>(std::floor( center_element / 2 )) };// = 2
+            int center_element_NEST_1{static_cast<double>(std::floor( center_element / 2 )) };
 
-            for(int i{ min }; i < center_element-1; ++i)
+            if(array[center_element_NEST_1] > target)
             {
-                if(array[center_element_NEST_1] > target)
-                {
-                    int center_element_NEST_2{static_cast<double>(std::floor( center_element_NEST_1 / 2 )) };// = 1
-
-                    for(int i{ min }; i < center_element_NEST_1-1; ++i)    
-                    {
-
-                    }                
-
-                }
+                int center_element_NEST_2{static_cast<double>(std::floor( center_element_NEST_1 / 2 )) };
+            }
+            else if(array[center_element] < target)
+            {
+                
+            }
+            else if(array[center_element_NEST_1] == target)
+            {
+                return array[center_element_NEST_1];
             }
         }
-        if else(array[center_element] < target)
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        else if(array[center_element] < target)
         {
-            
+            int new_x{ static_cast<int>(std::floor( ((std::size(array) - 1) - center_element) / 2 ))};
+            int new_y{ center_element + new_x };
+            int center_element_NEST_1A{ array[new_y] };
+
+            if(center_element_NEST_1A > target)
+            {
+                //int center_element_NEST_2A{static_cast<double>(std::floor( new_y / 2 )) };
+            }
+            else if(array[center_element] < target)
+            {
+                //int new_x{ static_cast<int>(std::floor( ((std::size(array) - 1) - center_element) / 2 ))};
+                //int new_y{ center_element + new_x };
+                //int center_element_NEST_1A{ array[new_y] };
+
+                if(array[center_element_NEST_1] > target)
+                {
+                    //int center_element_NEST_1{static_cast<double>(std::floor( center_element / 2 )) };
+                }
+                else if(array[center_element] < target)
+                {
+                    
+                }
+                else if(array[center_element_NEST_1] == target)
+                {
+                    return array[center_element_NEST_1];
+                }
+            }
+            else if(array[center_element_NEST_1] == target)
+            {
+                return array[center_element_NEST_1];
+            }
         }
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        else if(array[center_element] == target)
+        {
+            return array[i];
+        }
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
 }
 
