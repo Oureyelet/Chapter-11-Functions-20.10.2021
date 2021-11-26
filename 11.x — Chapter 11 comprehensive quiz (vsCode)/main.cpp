@@ -25,73 +25,7 @@ int binarySearch(const int* array, int target, int min, int max)
 {  
     int center_element{static_cast<double>(std::floor( max / 2 )) }; // = index of array.
  
-    for(int i{ min }; i < static_cast<int>(std::size(array)) - 1; ++i)
-    {
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        if(array[center_element] > target)
-        {
-            int center_element_NEST_1{static_cast<double>(std::floor( center_element / 2 )) };
-
-            if(array[center_element_NEST_1] > target)
-            {
-                int center_element_NEST_2{static_cast<double>(std::floor( center_element_NEST_1 / 2 )) };
-            }
-            else if(array[center_element] < target)
-            {
-                
-            }
-            else if(array[center_element_NEST_1] == target)
-            {
-                return array[center_element_NEST_1];
-            }
-        }
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        else if(array[center_element] < target)
-        {
-            int new_x{ static_cast<int>(std::floor( ((std::size(array) - 1) - center_element) / 2 ))};
-            int new_y{ center_element + new_x };
-            int center_element_NEST_1A{ array[new_y] };
-
-            if(center_element_NEST_1A > target)
-            {
-                //int center_element_NEST_2A{static_cast<double>(std::floor( new_y / 2 )) };
-            }
-            else if(array[center_element] < target)
-            {
-                //int new_x{ static_cast<int>(std::floor( ((std::size(array) - 1) - center_element) / 2 ))};
-                //int new_y{ center_element + new_x };
-                //int center_element_NEST_1A{ array[new_y] };
-
-                if(array[center_element_NEST_1] > target)
-                {
-                    //int center_element_NEST_1{static_cast<double>(std::floor( center_element / 2 )) };
-                }
-                else if(array[center_element] < target)
-                {
-                    
-                }
-                else if(array[center_element_NEST_1] == target)
-                {
-                    return array[center_element_NEST_1];
-                }
-            }
-            else if(array[center_element_NEST_1] == target)
-            {
-                return array[center_element_NEST_1];
-            }
-        }
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        else if(array[center_element] == target)
-        {
-            return array[i];
-        }
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    }
+    
 }
 
 int main()
