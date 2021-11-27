@@ -4,44 +4,21 @@
 #include <cmath> // for std::floor
 #include <numeric> // for std::midpoint(a, b)
 
-int midPoint(int x, int y)
-{
-    int center_element{static_cast<int>(std::floor( (x+y) / 2 )) };
-
-    return center_element;
-}
-
-
-int binarySearch(const int* array, int target, int min, int max)
-{
-    int center_element{ midPoint(min, max) };
-
-    if(array[center_element] == target)
-        return center_element;
-    else if(array[center_element] < target)
-        return binarySearch(array, target, min, center_element - 1);
-    else if(array[center_element] > target)
-        return binarySearch(array, target, center_element + 1, max);
-    else
-        return -1;
-}
-
-
-
 
 int main()
 {
-    //constexpr int array[]{ 3, 6, 8, 12, 14, 17, 20, 21, 26, 32, 36, 37, 42, 44, 48 };
-                        //[0][1][2][ 3][ 4][ 5][ 6][ 7][ 8][ 9][10][11][12][13][14]
-                                                    
-    //int center_element{static_cast<int>(std::floor( 14 / 2 )) };
+    constexpr int array[]{ 3, 6, 8, 12, 14, 17, 20, 21, 26, 32, 36, 37, 42, 44, 48 };
 
-    std::cout << midPoint(0, 10) << '\n';//5
-    std::cout << midPoint(3, 8) << '\n';//5
-    std::cout << midPoint(5, 9) << '\n';//7
-    std::cout << midPoint(2, 10) << '\n';//6
+    constexpr int testValues[9]{ 0, 3, 12, 13, 22, 26, 43, 44, 49 };
 
-    std::cout << "Hello" << '\n';
+    if(std::binary_search(std::begin(array), std::end(array), testValues))
+    {
+        std::cout << "founded !" << '\n';
+    }
+    else
+    {
+        std::cout << "not founded ;/" << '\n';
+    }
 
     return 0;
 }
