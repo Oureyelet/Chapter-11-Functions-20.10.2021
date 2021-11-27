@@ -10,6 +10,13 @@ void swap_int(int& a, int& b);
 
 //
 
+int midPoint(int x, int y)
+{
+    int center_element{static_cast<int>(std::floor( (x+y) / 2 )) };
+
+    return center_element;
+}
+
 int doSomething()
 {   
     int array[]{ 1, 2, 3, 4, 5 };
@@ -21,11 +28,44 @@ int doSomething()
 // min is the index of the lower bounds of the array we're searching.
 // max is the index of the upper bounds of the array we're searching.
 // binarySearch() should return the index of the target element if the target is found, -1 otherwise
-int binarySearch(const int* array, int target, int min, int max)
-{  
-    int center_element{static_cast<double>(std::floor( max / 2 )) }; // = index of array.
- 
+int binarySearch_iterative_version(const int* array, int target, int min, int max)
+{
+    //assert(array); // make sure array exists
+
+    while (min <= max)
+    {
+        int center_element{ midPoint(min, max) };
     
+        if(array[center_element] > target)
+        {
+            max = center_element - 1;
+        }
+        else if(array[center_element] < target)
+        {
+            min = center_element + 1;
+        }
+        else
+        {
+            return center_element;
+        }
+    }
+
+    return -1;
+}
+
+
+int binarySearch_recursive_version(const int* array, int target, int min, int max)
+{
+    int mid{ static_cast<int>(std::floor( (min+max) / 2 )) };
+
+    if(min > max)
+        return -1;
+    else if(array[mid] == target)
+        return mid;
+    else if(array[mid] < target)
+        return binarySearch_recursive_version(array, target, mid+1, max);
+    else
+        return binarySearch_recursive_version(array, target, min, mid-1);
 }
 
 int main()
@@ -224,7 +264,7 @@ int main()
     for (int count{ 0 }; count < numTestValues; ++count)
     {
         // See if our test value is in the array
-        int index{ binarySearch(array, testValues[count], 0, static_cast<int>(std::size(array)) - 1) };
+        int index{ binarySearch_recursive_version(array, testValues[count], 0, static_cast<int>(std::size(array)) - 1) };
         // If it matches our expected value, then great!
         if (index == expectedValues[count])
              std::cout << "test value " << testValues[count] << " passed!\n";
@@ -232,6 +272,7 @@ int main()
              std::cout << "test value " << testValues[count] << " failed.  There's something wrong with your code!\n";
     }
 
+    //b) Write a recursive version of the binarySearch function.
 
 
 

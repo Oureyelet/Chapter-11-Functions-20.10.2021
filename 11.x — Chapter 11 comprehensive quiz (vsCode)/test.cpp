@@ -12,33 +12,18 @@ int midPoint(int x, int y)
 }
 
 
-int binarySearch(const int* array, int target, int min, int max)// if max 8
-{  
-    int center_element{ midPoint(min, max) }; // 4
+int binarySearch(const int* array, int target, int min, int max)
+{
+    int center_element{ midPoint(min, max) };
 
     if(array[center_element] == target)
         return center_element;
-    else if(array[center_element] > target)
-    {
-        mix = center_element;
-        int center_element_1{ midPoint(min, max) };
-
-        if(array[center_element] == target)
-        return center_element;
-    }
     else if(array[center_element] < target)
-    {
-        min = center_element + 1 ; // 5(index)     max = 8
-        int center_element_2{ midPoint(min, max) };
-
-        if(array[center_element] == target)
-        return center_element;
-    }
-
-    for(int i{ 20 }; i != 0; --i)
-    {
-        
-    }
+        return binarySearch(array, target, min, center_element - 1);
+    else if(array[center_element] > target)
+        return binarySearch(array, target, center_element + 1, max);
+    else
+        return -1;
 }
 
 
